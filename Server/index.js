@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const port = 4000;
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const db = require("./Database");
 const cors = require("cors");
 const Passport = require("./passport");
@@ -38,6 +38,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
@@ -48,8 +49,10 @@ app.post("/signin", (req, res) => {
 app.post("/college/login", passport.authenticate('local', { session: false }), async (req, res) => {
   const { email, password } = req.body;
   const user = req.user
+  console.log(req.authInfo.message);
   const token = jwt.sign({ user }, 'mysecretkey');
   res.json({ token });
+
   // console.log(await CollegeLogin(email, password));
 });
 
@@ -135,8 +138,9 @@ app.get(
 
 // upload files to database and the server
 app.get('/college/dashboard', passport.authenticate('jwt', { session: false }), (req, res) => {
-  console.log('b');
-  // console.log(req.user);
+  console.log("enter the router after the jwt authentication");
+  // res.json(req.authInfo)
+  res.json({ message: 'college dashboard' });
 })
 
 app.post('/college/dashboard', uploadMiddleware, async (req, res) => {
